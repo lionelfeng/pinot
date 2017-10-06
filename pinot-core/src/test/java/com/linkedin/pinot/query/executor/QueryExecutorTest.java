@@ -42,6 +42,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.io.FileUtils;
+import org.apache.helix.ZNRecord;
+import org.apache.helix.store.zk.ZkHelixPropertyStore;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -86,12 +88,16 @@ public class QueryExecutorTest {
 
     // Mock the instance data manager
     _serverMetrics = new ServerMetrics(new MetricsRegistry());
-    TableDataManagerProvider.setServerMetrics(_serverMetrics);
     TableDataManagerConfig tableDataManagerConfig = mock(TableDataManagerConfig.class);
     when(tableDataManagerConfig.getTableDataManagerType()).thenReturn("offline");
     when(tableDataManagerConfig.getTableName()).thenReturn(TABLE_NAME);
     when(tableDataManagerConfig.getDataDir()).thenReturn(FileUtils.getTempDirectoryPath());
-    TableDataManager tableDataManager = TableDataManagerProvider.getTableDataManager(tableDataManagerConfig, null);
+    @SuppressWarnings("unchecked")
+    ZkHelixPropertyStore<ZNRecord> propertyStore = mock(ZkHelixPropertyStore.class);
+    ServerMetrics serverMetrics = mock(ServerMetrics.class);
+    TableDataManager tableDataManager =
+        TableDataManagerProvider.getTableDataManager(tableDataManagerConfig, "dummyInstance", propertyStore,
+            serverMetrics);
     tableDataManager.start();
     for (IndexSegment indexSegment : _indexSegments) {
       tableDataManager.addSegment(indexSegment);

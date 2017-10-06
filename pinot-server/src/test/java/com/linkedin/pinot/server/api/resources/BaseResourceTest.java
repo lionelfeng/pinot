@@ -30,7 +30,6 @@ import com.linkedin.pinot.core.segment.creator.impl.SegmentIndexCreationDriverIm
 import com.linkedin.pinot.segments.v1.creator.SegmentTestUtils;
 import com.linkedin.pinot.server.starter.ServerInstance;
 import com.linkedin.pinot.server.starter.helix.AdminApiApplication;
-import com.yammer.metrics.core.MetricsRegistry;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
@@ -40,6 +39,8 @@ import java.util.Map;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import org.apache.commons.io.FileUtils;
+import org.apache.helix.ZNRecord;
+import org.apache.helix.store.zk.ZkHelixPropertyStore;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.testng.Assert;
@@ -68,8 +69,6 @@ public abstract class BaseResourceTest {
     URL resourceUrl = getClass().getClassLoader().getResource(AVRO_DATA_PATH);
     Assert.assertNotNull(resourceUrl);
     _avroFile = new File(resourceUrl.getFile());
-
-    TableDataManagerProvider.setServerMetrics(new ServerMetrics(new MetricsRegistry()));
 
     // Mock the instance data manager
     InstanceDataManager instanceDataManager = mock(InstanceDataManager.class);
@@ -131,7 +130,12 @@ public abstract class BaseResourceTest {
     when(tableDataManagerConfig.getTableDataManagerType()).thenReturn("offline");
     when(tableDataManagerConfig.getTableName()).thenReturn(tableName);
     when(tableDataManagerConfig.getDataDir()).thenReturn(FileUtils.getTempDirectoryPath());
-    TableDataManager tableDataManager = TableDataManagerProvider.getTableDataManager(tableDataManagerConfig, null);
+    @SuppressWarnings("unchecked")
+    ZkHelixPropertyStore<ZNRecord> propertyStore = mock(ZkHelixPropertyStore.class);
+    ServerMetrics serverMetrics = mock(ServerMetrics.class);
+    TableDataManager tableDataManager =
+        TableDataManagerProvider.getTableDataManager(tableDataManagerConfig, "dummyInstance", propertyStore,
+            serverMetrics);
     tableDataManager.start();
     _tableDataManagerMap.put(tableName, tableDataManager);
   }
