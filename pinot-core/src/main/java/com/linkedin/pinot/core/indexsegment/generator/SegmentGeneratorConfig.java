@@ -17,7 +17,6 @@ package com.linkedin.pinot.core.indexsegment.generator;
 
 import com.google.common.base.Preconditions;
 import com.linkedin.pinot.common.config.SegmentPartitionConfig;
-import com.linkedin.pinot.common.data.DateTimeFieldSpec;
 import com.linkedin.pinot.common.data.FieldSpec;
 import com.linkedin.pinot.common.data.FieldSpec.FieldType;
 import com.linkedin.pinot.common.data.Schema;
@@ -30,7 +29,7 @@ import com.linkedin.pinot.core.indexsegment.utils.AvroUtils;
 import com.linkedin.pinot.core.segment.DefaultSegmentNameGenerator;
 import com.linkedin.pinot.core.segment.SegmentNameGenerator;
 import com.linkedin.pinot.core.segment.creator.impl.V1Constants;
-import com.linkedin.pinot.core.startree.hll.HllConfig;
+import com.linkedin.pinot.startree.hll.HllConfig;
 
 import java.io.File;
 import java.io.IOException;

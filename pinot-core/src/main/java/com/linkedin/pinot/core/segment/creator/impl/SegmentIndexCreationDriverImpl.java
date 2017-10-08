@@ -66,7 +66,7 @@ import com.linkedin.pinot.core.startree.StarTreeBuilderConfig;
 import com.linkedin.pinot.core.startree.StarTreeIndexNode;
 import com.linkedin.pinot.core.startree.StarTreeIndexNodeInterf;
 import com.linkedin.pinot.core.startree.StarTreeSerDe;
-import com.linkedin.pinot.core.startree.hll.HllConfig;
+import com.linkedin.pinot.startree.hll.HllConfig;
 import com.linkedin.pinot.core.startree.hll.HllUtil;
 import com.linkedin.pinot.core.util.CrcUtils;
 
