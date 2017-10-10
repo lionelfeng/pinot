@@ -15,7 +15,6 @@
  */
 package com.linkedin.pinot.core.segment.creator;
 
-import java.io.Closeable;
 import java.io.IOException;
 
 
@@ -24,7 +23,7 @@ import java.io.IOException;
  * Implementations of this interface write raw data values (in potentially compressed formats),
  * as opposed to dictionary encoded index.
  */
-public interface SingleValueRawIndexCreator extends ForwardIndexCreator, Closeable {
+public interface SingleValueRawIndexCreator extends ForwardIndexCreator {
 
   /**
    * This method creates an index for the given docId and int value.

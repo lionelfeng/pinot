@@ -15,29 +15,51 @@
  */
 package com.linkedin.pinot.core.segment.creator;
 
+import java.io.Closeable;
 import java.io.IOException;
 
 
 /**
- * Nov 21, 2014
- *
- * Implementation of this class is used to create inverted Indexes
- * Currently two implementations are
- * p4Delta and
- * RoaringBitmap
+ * Currently only support RoaringBitmap inverted index.
+ * <pre>
+ * Layout for RoaringBitmap inverted index:
+ * |-------------------------------------------------------------------------|
+ * |                    Start offset of 1st bitmap                           |
+ * |    End offset of 1rd bitmap (exclusive) / Start offset of 2nd bitmap    |
+ * |                                   ...                                   |
+ * | End offset of 2nd last bitmap (exclusive) / Start offset of last bitmap |
+ * |                  End offset of last bitmap (exclusive)                  |
+ * |-------------------------------------------------------------------------|
+ * |                           Data for 1st bitmap                           |
+ * |                           Data for 2nd bitmap                           |
+ * |                                   ...                                   |
+ * |                           Data for last bitmap                          |
+ * |-------------------------------------------------------------------------|
+ * </pre>
  */
+public interface InvertedIndexCreator extends Closeable {
 
-public interface InvertedIndexCreator {
+  /**
+   * Add an entry for single-value column.
+   *
+   * @param docId Document id
+   * @param dictId Dictionary id
+   */
+  void addSV(int docId, int dictId);
 
-  //public void add(int docId, Object dictionaryId);
+  /**
+   * Add an entry for multi-value column.
+   *
+   * @param docId Document id
+   * @param dictIdBuffer Buffer for dictionary ids
+   * @param numValues Number of values in this entry
+   */
+  void addMV(int docId, int[] dictIdBuffer, int numValues);
 
-  void add(int docId, int dictionaryId);
-
-  void add(int docIds, int[] dictionaryIds);
-
-  void add(int docIds, int[] dictionaryIds, int length);
-
-  long totalTimeTakeSoFar();
-
+  /**
+   * Seal the results into the file.
+   *
+   * @throws IOException
+   */
   void seal() throws IOException;
 }
